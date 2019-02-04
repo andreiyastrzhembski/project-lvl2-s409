@@ -1,11 +1,7 @@
 <?php
 namespace Gendiff\Cli;
 
-use function \cli\line;
-
-function run()
-{
-    $doc = <<<DOC
+const DOC = <<<DOC
 Generate diff
 
 Usage:
@@ -18,5 +14,7 @@ Options:
 
 DOC;
 
-    $args = \Docopt::handle($doc);
+function run()
+{
+    $args = \Docopt::handle(DOC);
 }
