@@ -5,7 +5,6 @@ use function \cli\line;
 
 function run()
 {
-    //line('Generate diff');
     $doc = <<<DOC
 Generate diff
 
