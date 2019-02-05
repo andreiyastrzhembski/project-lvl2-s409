@@ -1,6 +1,8 @@
 <?php
 namespace Gendiff\Cli;
 
+use function Gendiff\Differ\genDiff;
+
 const DOC = <<<DOC
 Generate diff
 
@@ -17,4 +19,9 @@ DOC;
 function run()
 {
     $args = \Docopt::handle(DOC);
+
+    $pathToFile1 = $args['<firstFile>'];
+    $pathToFile2 = $args['<secondFile>'];
+    $diff = genDiff($pathToFile1, $pathToFile2);
+    print_r($diff);
 }
