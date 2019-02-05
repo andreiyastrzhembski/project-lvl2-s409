@@ -19,7 +19,8 @@
     },
     "autoload": {
         "files": [
-            "src/Cli.php"
+            "src/Cli.php",
+            "src/Differ.php"
         ]
     },
     "require": {
