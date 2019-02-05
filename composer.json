@@ -18,6 +18,9 @@
         "test": "phpunit tests"
     },
     "autoload": {
+        "psr-4": {
+            "Gendiff\\": "src"
+        },
         "files": [
             "src/Cli.php",
             "src/Differ.php"
