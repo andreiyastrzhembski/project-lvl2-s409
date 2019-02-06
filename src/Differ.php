@@ -1,6 +1,8 @@
 <?php
 namespace Gendiff\Differ;
 
+use Symfony\Component\Yaml\Yaml;
+
 function genDiff(string $pathToFile1, string $pathToFile2): string
 {
     $data1 = getData($pathToFile1);
@@ -18,8 +20,28 @@ function genDiff(string $pathToFile1, string $pathToFile2): string
 
 function getData(string $pathToFile): array
 {
+    $parser = getParser($pathToFile);
     $content = file_get_contents($pathToFile);
-    return json_decode($content, true);
+    return $parser($content);
+}
+
+function getParser($pathToFile)
+{
+    $fileExt = pathinfo($pathToFile, PATHINFO_EXTENSION);
+    switch ($fileExt) {
+        case 'json':
+            $parser = function ($content) {
+                return json_decode($content, true);
+            };
+            break;
+        case 'yaml':
+        case 'yml':
+            $parser = function ($content) {
+                return Yaml::parse($content);
+            };
+            break;
+    }
+    return $parser;
 }
 
 function calcDiff(array $data1, array $data2): array
