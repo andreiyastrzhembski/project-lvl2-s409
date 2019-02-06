@@ -5,11 +5,11 @@ function genDiff(string $pathToFile1, string $pathToFile2): string
 {
     $data1 = getData($pathToFile1);
     $data2 = getData($pathToFile2);
-    $diff = getDiff($data1, $data2);
+    $diff = calcDiff($data1, $data2);
 
     $result = '{' . PHP_EOL;
     foreach ($diff as $key => $value) {
-        $result .= '  ' . $key . ': ' . $value . PHP_EOL;
+        $result .= '  ' . $key . ': ' . json_encode($value) . PHP_EOL;
     }
     $result .= '}' . PHP_EOL;
 
@@ -22,7 +22,7 @@ function getData(string $pathToFile): array
     return json_decode($content, true);
 }
 
-function getDiff(array $data1, array $data2): array
+function calcDiff(array $data1, array $data2): array
 {
     $result = [];
     foreach ($data1 as $key => $value) {
