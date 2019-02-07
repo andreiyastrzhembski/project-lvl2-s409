@@ -19,9 +19,12 @@ DOC;
 function run()
 {
     $args = \Docopt::handle(DOC);
-
     $pathToFile1 = $args['<firstFile>'];
     $pathToFile2 = $args['<secondFile>'];
-    $diff = genDiff($pathToFile1, $pathToFile2);
-    print_r($diff);
+    try {
+        $diff = genDiff($pathToFile1, $pathToFile2);
+        print_r($diff);
+    } catch (\Exception $e) {
+        print_r($e->getMessage() . PHP_EOL);
+    }
 }
