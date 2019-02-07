@@ -2,72 +2,39 @@
 namespace Gendiff\Differ;
 
 use Funct;
-use Symfony\Component\Yaml\Yaml;
+use function Gendiff\Parser\getData;
 
 function genDiff(string $pathToFile1, string $pathToFile2): string
 {
     $data1 = getData($pathToFile1);
     $data2 = getData($pathToFile2);
     $changes = calcDiff($data1, $data2);
-
     $result = array_reduce(
         $changes,
-        function ($carry, $item) use ($data1, $data2) {
-            [$key, $status] = $item;
+        function ($carry, $item) {
+            [$key, $status, $oldValue, $newValue] = $item;
+            $oldValue = is_bool($oldValue) ? var_export($oldValue, true) : $oldValue;
+            $newValue = is_bool($newValue) ? var_export($newValue, true) : $newValue;
             switch ($status) {
                 case 'unchanged':
-                    $str = '    ' . $key . ': ' . json_encode($data1[$key]) . PHP_EOL;
+                    $str = '    ' . $key . ': ' . $oldValue . PHP_EOL;
                     break;
                 case 'changed':
-                    $str = '  - ' . $key . ': ' . json_encode($data1[$key]) . PHP_EOL
-                        . '  + ' . $key . ': ' . json_encode($data2[$key]) . PHP_EOL;
+                    $str = '  - ' . $key . ': ' . $oldValue . PHP_EOL
+                        . '  + ' . $key . ': ' . $newValue . PHP_EOL;
                     break;
                 case 'deleted':
-                    $str = '  - ' . $key . ': ' . json_encode($data1[$key]) . PHP_EOL;
+                    $str = '  - ' . $key . ': ' . $oldValue . PHP_EOL;
                     break;
                 case 'added':
-                    $str = '  + ' . $key . ': ' . json_encode($data2[$key]) . PHP_EOL;
+                    $str = '  + ' . $key . ': ' . $newValue . PHP_EOL;
                     break;
             }
-
             return $carry . $str;
         },
         ''
     );
-
     return '{' . PHP_EOL . $result . '}' . PHP_EOL;
-}
-
-function readFile(string $pathToFile): string
-{
-    if (\is_readable($pathToFile)) {
-        $content = file_get_contents($pathToFile);
-    }
-    return $content;
-}
-
-function getData(string $pathToFile): array
-{
-    $content = readFile($pathToFile);
-    $parse = getParser($content);
-    return $parse($content);
-}
-
-function getParser(string $content)
-{
-    switch ($content[0]) {
-        case '{':
-            $parse = function ($content) {
-                return json_decode($content, true);
-            };
-            break;
-        case '-':
-            $parse = function ($content) {
-                return Yaml::parse($content);
-            };
-            break;
-    }
-    return $parse;
 }
 
 function calcDiff(array $data1, array $data2): array
@@ -80,16 +47,23 @@ function calcDiff(array $data1, array $data2): array
         if (array_key_exists($key, $data1) && array_key_exists($key, $data2)) {
             if ($data1[$key] === $data2[$key]) {
                 $status = 'unchanged';
+                $oldValue = $data1[$key];
+                $newValue = $oldValue;
             } else {
                 $status = 'changed';
+                $oldValue = $data1[$key];
+                $newValue = $data2[$key];
             }
         } elseif (array_key_exists($key, $data1)) {
             $status = 'deleted';
+            $oldValue = $data1[$key];
+            $newValue = null;
         } else {
             $status = 'added';
+            $oldValue = null;
+            $newValue = $data2[$key];
         }
-        return [$key, $status];
+        return [$key, $status, $oldValue, $newValue];
     }, $allKeys);
-
     return $changes;
 }
