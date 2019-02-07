@@ -23,7 +23,8 @@
         },
         "files": [
             "src/Cli.php",
-            "src/Differ.php"
+            "src/Differ.php",
+            "src/Parser.php"
         ]
     },
     "require": {
