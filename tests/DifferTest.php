@@ -12,16 +12,11 @@ class DifferTest extends TestCase
     public function testGenDiff()
     {
         $expected = file_get_contents('tests/testData/diff_string_json');
+        
         $actual = genDiff('tests/testData/before.json', 'tests/testData/after.json');
         $this->assertEquals($expected, $actual);
-    }
 
-    public function testCalcDiff()
-    {
-        $expected = getData('tests/testData/diff.json');
-        $data1 = getData('tests/testData/before.json');
-        $data2 = getData('tests/testData/after.json');
-        $actual = calcDiff($data1, $data2);
+        $actual = genDiff('tests/testData/before.yml', 'tests/testData/after.yml');
         $this->assertEquals($expected, $actual);
     }
 }
