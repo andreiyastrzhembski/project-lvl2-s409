@@ -11,8 +11,8 @@ class DifferTest extends TestCase
 {
     public function testGenDiff()
     {
-        $expected = file_get_contents('tests/testData/diff_string_json');
-        
+        $expected = file_get_contents('tests/testData/diff_string');
+
         $actual = genDiff('tests/testData/before.json', 'tests/testData/after.json');
         $this->assertEquals($expected, $actual);
 
