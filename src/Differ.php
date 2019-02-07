@@ -72,27 +72,6 @@ function getParser(string $content)
 
 function calcDiff(array $data1, array $data2): array
 {
-    /*
-    $result = [];
-    foreach ($data1 as $key => $value) {
-        if (array_key_exists($key, $data2)) {
-            if ($value === $data2[$key]) {
-                $result['  ' . $key] = $value;
-            } else {
-                $result['- ' . $key] = $data1[$key];
-                $result['+ ' . $key] = $data2[$key];
-            }
-        } else {
-            $result['- ' . $key] = $value;
-        }
-    }
-    foreach ($data2 as $key => $value) {
-        if (!array_key_exists($key, $data1)) {
-            $result['+ ' . $key] = $value;
-        }
-    }
-    */
-
     $keys1 = array_keys($data1);
     $keys2 = array_keys($data2);
     $allKeys = Funct\Collection\union($keys1, $keys2);
