@@ -5,21 +5,19 @@ use Symfony\Component\Yaml\Yaml;
 
 function readFile(string $pathToFile): string
 {
-    if (\is_readable($pathToFile)) {
-        $content = file_get_contents($pathToFile);
-    } else {
+    if (!\is_readable($pathToFile)) {
         throw new \Exception("Cannot read file '{$pathToFile}'");
     }
+    $content = file_get_contents($pathToFile);
     return $content;
 }
 
 function getType(string $pathToFile): string
 {
-    if (\is_readable($pathToFile)) {
-        $type = pathinfo($pathToFile, PATHINFO_EXTENSION);
-    } else {
+    if (!\is_readable($pathToFile)) {
         throw new \Exception("Cannot get file type '{$pathToFile}'");
     }
+    $type = pathinfo($pathToFile, PATHINFO_EXTENSION);
     return $type;
 }
 
