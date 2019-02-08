@@ -23,7 +23,7 @@ function run()
     $pathToFile2 = $args['<secondFile>'];
     try {
         $diff = genDiff($pathToFile1, $pathToFile2);
-        print_r($diff);
+        print_r($diff . PHP_EOL);
     } catch (\Exception $e) {
         print_r($e->getMessage() . PHP_EOL);
     }
