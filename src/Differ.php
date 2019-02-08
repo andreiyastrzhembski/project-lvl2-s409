@@ -16,9 +16,7 @@ function genDiff(string $pathToFile1, string $pathToFile2): string
 
 function calcDiffTree(array $data1, array $data2): array
 {
-    $keys1 = array_keys($data1);
-    $keys2 = array_keys($data2);
-    $uniqKeys = union($keys1, $keys2);
+    $uniqKeys = union(array_keys($data1), array_keys($data2));
     return array_reduce($uniqKeys, function ($carry, $key) use ($data1, $data2) {
         $oldValue = isset($data1[$key]) ? $data1[$key] : null;
         $newValue = isset($data2[$key]) ? $data2[$key] : null;
