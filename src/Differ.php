@@ -1,69 +1,106 @@
 <?php
 namespace Gendiff\Differ;
 
-use Funct;
+use function Funct\Collection\union;
+use function Funct\Collection\flattenAll;
+
 use function Gendiff\Parser\getData;
 
 function genDiff(string $pathToFile1, string $pathToFile2): string
 {
     $data1 = getData($pathToFile1);
     $data2 = getData($pathToFile2);
-    $changes = calcDiff($data1, $data2);
-    $result = array_reduce(
-        $changes,
-        function ($carry, $item) {
-            [$key, $status, $oldValue, $newValue] = $item;
-            $oldValue = is_bool($oldValue) ? var_export($oldValue, true) : $oldValue;
-            $newValue = is_bool($newValue) ? var_export($newValue, true) : $newValue;
-            switch ($status) {
-                case 'unchanged':
-                    $str = '    ' . $key . ': ' . $oldValue . PHP_EOL;
-                    break;
-                case 'changed':
-                    $str = '  - ' . $key . ': ' . $oldValue . PHP_EOL
-                        . '  + ' . $key . ': ' . $newValue . PHP_EOL;
-                    break;
-                case 'deleted':
-                    $str = '  - ' . $key . ': ' . $oldValue . PHP_EOL;
-                    break;
-                case 'added':
-                    $str = '  + ' . $key . ': ' . $newValue . PHP_EOL;
-                    break;
-            }
-            return $carry . $str;
-        },
-        ''
-    );
-    return '{' . PHP_EOL . $result . '}' . PHP_EOL;
+    $tree = calcDiffTree($data1, $data2);
+    return turnDifftoText($tree);
 }
 
-function calcDiff(array $data1, array $data2): array
+function calcDiffTree(array $data1, array $data2): array
 {
     $keys1 = array_keys($data1);
     $keys2 = array_keys($data2);
-    $allKeys = Funct\Collection\union($keys1, $keys2);
-
-    $changes = array_map(function ($key) use ($data1, $data2) {
+    $uniqKeys = union($keys1, $keys2);
+    return array_reduce($uniqKeys, function ($carry, $key) use ($data1, $data2) {
+        $oldValue = isset($data1[$key]) ? $data1[$key] : null;
+        $newValue = isset($data2[$key]) ? $data2[$key] : null;
         if (array_key_exists($key, $data1) && array_key_exists($key, $data2)) {
-            if ($data1[$key] === $data2[$key]) {
-                $status = 'unchanged';
-                $oldValue = $data1[$key];
-                $newValue = $oldValue;
+            if (is_array($oldValue) && is_array($newValue)) {
+                $carry[] = createNode($key, 'nested', $oldValue, $newValue, calcDiffTree($oldValue, $newValue));
+            } elseif (is_array($oldValue)) {
+                $carry[] = createNode($key, 'unchanged', $oldValue, $newValue);
             } else {
-                $status = 'changed';
-                $oldValue = $data1[$key];
-                $newValue = $data2[$key];
+                if ($oldValue == $newValue) {
+                    $carry[] = createNode($key, 'unchanged', $oldValue, null);
+                } else {
+                    $carry[] = createNode($key, 'changed', $oldValue, $newValue);
+                }
             }
-        } elseif (array_key_exists($key, $data1)) {
-            $status = 'deleted';
-            $oldValue = $data1[$key];
-            $newValue = null;
         } else {
-            $status = 'added';
-            $oldValue = null;
-            $newValue = $data2[$key];
+            if (array_key_exists($key, $data1)) {
+                $carry[] = createNode($key, 'deleted', $oldValue, null);
+            } else {
+                $carry[] = createNode($key, 'added', null, $newValue);
+            }
         }
-        return [$key, $status, $oldValue, $newValue];
-    }, $allKeys);
-    return $changes;
+        return $carry;
+    }, []);
+}
+
+function createNode($key, $status, $oldValue, $newValue, $children = null)
+{
+    $old = is_bool($oldValue) ? var_export($oldValue, true) : $oldValue;
+    $new = is_bool($newValue) ? var_export($newValue, true) : $newValue;
+    return [
+        'key' => $key,
+        'status' => $status,
+        'oldValue' => $old,
+        'newValue' => $new,
+        'children' => $children
+    ];
+}
+
+function turnDifftoText($tree, $lvl = 0): string
+{
+    $result = array_map(function ($node) use ($lvl) {
+        [
+            'key' => $key,
+            'status' => $status,
+            'oldValue' => $oldValue,
+            'newValue' => $newValue,
+            'children' => $children
+        ] = $node;
+        switch ($status) {
+            case 'nested':
+                return insSpaces($lvl) . '    ' . $key . ': ' . turnDifftoText($children, $lvl + 1);
+            case 'unchanged':
+                return insSpaces($lvl) . '    ' . $key . ': ' . turnDataToStr($oldValue, $lvl + 1);
+            case 'changed':
+                return [insSpaces($lvl) . '  - ' . $key . ': ' . turnDataToStr($oldValue, $lvl + 1),
+                insSpaces($lvl) . '  + ' . $key . ': ' . turnDataToStr($newValue, $lvl + 1)];
+            case 'deleted':
+                return insSpaces($lvl) . '  - ' . $key . ': ' . turnDataToStr($oldValue, $lvl + 1);
+            case 'added':
+                return insSpaces($lvl) . '  + ' . $key . ': ' . turnDataToStr($newValue, $lvl + 1);
+        }
+    }, $tree);
+    $text = implode(PHP_EOL, flattenAll($result));
+    return '{' . PHP_EOL . $text . PHP_EOL . insSpaces($lvl) . '}';
+}
+
+function turnDataToStr($data, $lvl = 0): string
+{
+    if (empty($data) || !is_array($data)) {
+        return $data;
+    }
+    $keys = array_keys($data);
+    $strings = array_reduce($keys, function ($carry, $key) use ($data, $lvl) {
+        $carry[] = insSpaces($lvl + 1) . $key . ': ' . $data[$key];
+        return $carry;
+    }, []);
+    $str = \implode(PHP_EOL, $strings) . PHP_EOL;
+    return '{' . PHP_EOL . $str . insSpaces($lvl) . '}';
+}
+
+function insSpaces($lvl)
+{
+    return str_repeat(' ', $lvl * 4);
 }
