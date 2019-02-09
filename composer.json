@@ -24,7 +24,9 @@
         "files": [
             "src/Cli.php",
             "src/Differ.php",
-            "src/Parser.php"
+            "src/Parser.php",
+            "src/Render.php",
+            "src/Renderers/RenderPretty.php"
         ]
     },
     "require": {
