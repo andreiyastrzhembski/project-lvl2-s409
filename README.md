@@ -15,3 +15,4 @@ composer global require andreiyastrzhembski/gendiff-hexlet
 [![asciicast](https://asciinema.org/a/xYrI77yHaStU3dvAZ7vXOvPNh.svg)](https://asciinema.org/a/xYrI77yHaStU3dvAZ7vXOvPNh)
 [![asciicast](https://asciinema.org/a/7K8waOCzwoOTTz5jilXVpMrK4.svg)](https://asciinema.org/a/7K8waOCzwoOTTz5jilXVpMrK4)
 [![asciicast](https://asciinema.org/a/8UeKEBHRcGnddSWNPYjCRpKYw.svg)](https://asciinema.org/a/8UeKEBHRcGnddSWNPYjCRpKYw)
+[![asciicast](https://asciinema.org/a/7XRkt9vveb80m8pVPTx2eeXSB.svg)](https://asciinema.org/a/7XRkt9vveb80m8pVPTx2eeXSB)
