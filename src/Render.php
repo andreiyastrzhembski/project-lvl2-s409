@@ -11,6 +11,8 @@ function render($tree, $format)
             return renderPretty($tree);
         case 'plain':
             return renderPlain($tree);
+        case 'json':
+            return \json_encode($tree);
         default:
             throw new \Exception("Unknown format '{$format}'");
     }
