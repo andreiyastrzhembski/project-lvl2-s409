@@ -2,13 +2,15 @@
 namespace Gendiff\Render;
 
 use function Gendiff\Renderers\RenderPretty\renderPretty;
+use function Gendiff\Renderers\RenderPlain\renderPlain;
 
 function render($tree, $format)
 {
     switch ($format) {
         case 'pretty':
             return renderPretty($tree);
-        //case 'plain':
+        case 'plain':
+            return renderPlain($tree);
         default:
             throw new \Exception("Unknown format '{$format}'");
     }

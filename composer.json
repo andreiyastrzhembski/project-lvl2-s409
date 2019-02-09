@@ -26,7 +26,8 @@
             "src/Differ.php",
             "src/Parser.php",
             "src/Render.php",
-            "src/Renderers/RenderPretty.php"
+            "src/Renderers/RenderPretty.php",
+            "src/Renderers/RenderPlain.php"
         ]
     },
     "require": {
