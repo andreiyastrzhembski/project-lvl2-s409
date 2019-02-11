@@ -14,6 +14,6 @@ function render($tree, $format)
         case 'json':
             return \json_encode($tree);
         default:
-            throw new \Exception("Unknown format '{$format}'");
+            throw new \Exception("Unsupported format '{$format}'");
     }
 }

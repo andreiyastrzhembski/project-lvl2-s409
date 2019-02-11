@@ -3,8 +3,8 @@ namespace Gendiff\Renderers\RenderPlain;
 
 function renderPlain($tree): string
 {
-    $strings = turnDataToStrings($tree);
-    return implode(PHP_EOL, $strings);
+    $lines = turnDataToStrings($tree);
+    return implode(PHP_EOL, $lines);
 }
 
 function turnDataToStrings($data, $parrents = []): array

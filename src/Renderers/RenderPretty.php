@@ -5,7 +5,7 @@ use function Funct\Collection\flattenAll;
 
 function renderPretty($tree, $lvl = 0): string
 {
-    $result = array_map(function ($node) use ($lvl) {
+    $lines = array_map(function ($node) use ($lvl) {
         [
             'key' => $key,
             'type' => $type,
@@ -35,7 +35,7 @@ function renderPretty($tree, $lvl = 0): string
         }
         return $str;
     }, $tree);
-    $text = implode(PHP_EOL, flattenAll($result));
+    $text = implode(PHP_EOL, flattenAll($lines));
     return '{' . PHP_EOL . $text . PHP_EOL . insSpaces($lvl) . '}';
 }
 
@@ -45,12 +45,12 @@ function turnDataToStr($data, $lvl = 0): string
         return $data;
     }
     $keys = array_keys($data);
-    $strings = array_reduce($keys, function ($carry, $key) use ($data, $lvl) {
+    $lines = array_reduce($keys, function ($carry, $key) use ($data, $lvl) {
         $carry[] = insSpaces($lvl + 1) . $key . ': ' . $data[$key];
         return $carry;
     }, []);
-    $str = \implode(PHP_EOL, $strings) . PHP_EOL;
-    return '{' . PHP_EOL . $str . insSpaces($lvl) . '}';
+    $text = \implode(PHP_EOL, $lines) . PHP_EOL;
+    return '{' . PHP_EOL . $text . insSpaces($lvl) . '}';
 }
 
 function insSpaces($lvl)
