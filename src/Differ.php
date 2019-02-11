@@ -6,7 +6,7 @@ use function Funct\Collection\union;
 use function Gendiff\Parser\getData;
 use function Gendiff\Render\render;
 
-function genDiff($pathToFile1, $pathToFile2, $format = 'pretty'): string
+function genDiff($pathToFile1, $pathToFile2, $format): string
 {
     $data1 = getData($pathToFile1);
     $data2 = getData($pathToFile2);
@@ -27,7 +27,7 @@ function calcDiffTree(array $data1, array $data2): array
                 $carry[] = createNode($key, 'unchanged', $oldValue, $newValue);
             } else {
                 if ($oldValue == $newValue) {
-                    $carry[] = createNode($key, 'unchanged', $oldValue, null);
+                    $carry[] = createNode($key, 'unchanged', $oldValue, $newValue);
                 } else {
                     $carry[] = createNode($key, 'changed', $oldValue, $newValue);
                 }
