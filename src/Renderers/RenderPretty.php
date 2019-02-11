@@ -17,17 +17,23 @@ function renderPretty($tree, $lvl = 0): string
         $new = is_bool($newValue) ? var_export($newValue, true) : $newValue;
         switch ($type) {
             case 'nested':
-                return insSpaces($lvl) . '    ' . $key . ': ' . renderPretty($children, $lvl + 1);
+                $str = insSpaces($lvl) . '    ' . $key . ': ' . renderPretty($children, $lvl + 1);
+                break;
             case 'unchanged':
-                return insSpaces($lvl) . '    ' . $key . ': ' . turnDataToStr($old, $lvl + 1);
+                $str = insSpaces($lvl) . '    ' . $key . ': ' . turnDataToStr($old, $lvl + 1);
+                break;
             case 'changed':
-                return [insSpaces($lvl) . '  - ' . $key . ': ' . turnDataToStr($old, $lvl + 1),
+                $str = [insSpaces($lvl) . '  - ' . $key . ': ' . turnDataToStr($old, $lvl + 1),
                 insSpaces($lvl) . '  + ' . $key . ': ' . turnDataToStr($new, $lvl + 1)];
+                break;
             case 'deleted':
-                return insSpaces($lvl) . '  - ' . $key . ': ' . turnDataToStr($old, $lvl + 1);
+                $str = insSpaces($lvl) . '  - ' . $key . ': ' . turnDataToStr($old, $lvl + 1);
+                break;
             case 'added':
-                return insSpaces($lvl) . '  + ' . $key . ': ' . turnDataToStr($new, $lvl + 1);
+                $str = insSpaces($lvl) . '  + ' . $key . ': ' . turnDataToStr($new, $lvl + 1);
+                break;
         }
+        return $str;
     }, $tree);
     $text = implode(PHP_EOL, flattenAll($result));
     return '{' . PHP_EOL . $text . PHP_EOL . insSpaces($lvl) . '}';

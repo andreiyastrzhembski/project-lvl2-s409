@@ -7,25 +7,48 @@ use function Gendiff\Differ\genDiff;
 
 class DifferTest extends TestCase
 {
-    public function testGenDiff()
+    private function getPath($filename)
     {
-        $expected = file_get_contents('tests/testData/diff_string');
+        return 'tests' . DIRECTORY_SEPARATOR
+            . 'testData'  . DIRECTORY_SEPARATOR
+            . $filename;
+    }
 
-        $actual = genDiff('tests/testData/before.json', 'tests/testData/after.json');
+    public function testGenDiffPretty()
+    {
+        $expected = file_get_contents($this->getPath('diff_string'));
+
+        $actual = genDiff(
+            $this->getPath('before.json'),
+            $this->getPath('after.json'),
+            'pretty'
+        );
         $this->assertEquals($expected, $actual);
 
-        $actual = genDiff('tests/testData/before.yml', 'tests/testData/after.yml');
+        $actual = genDiff(
+            $this->getPath('before.yml'),
+            $this->getPath('after.yml'),
+            'pretty'
+        );
         $this->assertEquals($expected, $actual);
     }
 
-    public function testGenDiffNested()
+    public function testGenDiffNestedPretty()
     {
-        $expected = file_get_contents('tests/testData/diff_string_nested');
+        $expected = file_get_contents($this->getPath('diff_string_nested'));
 
-        $actual = genDiff('tests/testData/before_nested.json', 'tests/testData/after_nested.json');
+        $actual = genDiff(
+            $this->getPath('before_nested.json'),
+            $this->getPath('after_nested.json'),
+            'pretty'
+        );
         $this->assertEquals($expected, $actual);
 
-        $actual = genDiff('tests/testData/before_nested.yml', 'tests/testData/after_nested.yml');
+        $actual = genDiff(
+            $this->getPath('before_nested.yml'),
+            $this->getPath('after_nested.yml'),
+            'pretty'
+        );
         $this->assertEquals($expected, $actual);
     }
 }
